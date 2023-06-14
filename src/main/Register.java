@@ -3,6 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -31,6 +32,9 @@ public class Register extends Application {
     private PasswordField confirmPasswordField;
     private Button registerButton;
     private Button loginButton;
+    private static String[] registerEmail = new String[100];
+    private static String[] registerPassword = new String[100];
+    private static int registerCount = 0;
 
     public static void main(String[] args) {
         launch(args);
@@ -44,8 +48,54 @@ public class Register extends Application {
         Scene scene = new Scene(anchorPane, 566, 465);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // Back to login Logic
+        loginButton.setOnAction(e->{
+        Main main = new Main();
+        main.start(new Stage());
+        primaryStage.close();
+    });
+                // Button Logic Reg
+        registerButton.setOnAction(e-> {
+        String email = emailTextField.getText();
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "All fields must be filled.");
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Password and Confirm Password do not match.");
+            return;
+        }
+
+        // Store the registration information
+        registerEmail[registerCount] = email;
+        registerPassword[registerCount] = password;
+        registerCount++;
+
+        // Clear the registration fields
+        emailTextField.clear();
+        passwordField.clear();
+        confirmPasswordField.clear();
+
+        // Show a success message
+        showAlert(Alert.AlertType.INFORMATION, "Success", "Registration successful!");
+    });
+    }
+        public static String[] getRegisteredEmails() {
+        return registerEmail;
     }
 
+    public static String[] getRegisteredPasswords() {
+        return registerPassword;
+    }
+
+    public static int getNumRegisteredUsers() {
+        return registerCount;
+    }
     public void init() {
         anchorPane = new AnchorPane();
         anchorPane.setPrefHeight(200);
@@ -140,5 +190,16 @@ public class Register extends Application {
 
         vBox.getChildren().addAll(titleLabel, gridPane);
         borderPane.setCenter(vBox);
+        
+
+
     }
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

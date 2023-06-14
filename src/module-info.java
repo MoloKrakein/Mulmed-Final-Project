@@ -11,4 +11,5 @@ module Finpro {
 	requires javafx.graphics;
 	requires javafx.controls;
 	requires javafx.media;
+	
 }

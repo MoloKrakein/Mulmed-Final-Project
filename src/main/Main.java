@@ -1,4 +1,7 @@
 package main;
+
+import java.util.Map;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -41,18 +44,71 @@ public class Main extends Application {
     private ColumnConstraints innerColumn1;
     private ColumnConstraints innerColumn2;
     private RowConstraints innerRow1;
-    private Button button1;
-    private Button button2;
+    private Button registerButton;
+    private Button loginButton;
+    
+    private Register register;
+
 
     @Override
-   public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {
         init();
         setupLayout(primaryStage);
         setupScene(primaryStage);
 
         primaryStage.setTitle("Login Window");
         primaryStage.show();
+
+        loginButton.setOnAction(e -> {
+            // Validate and redirect based on credentials
+        String email = emailTextField.getText();
+        String password = passwordTextField.getText();
+        
+        if (email.isEmpty() || password.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Email and password must be filled.");
+            return;
+            }
+            
+            register = new Register();
+
+            // Map<String, String> registerMap = register.getNumRegisteredUsers();
+            // Email validation
+            String[] registeredEmail = register.getRegisteredEmails();
+            String[] registeredPass = register.getRegisteredPasswords();
+            int numRegistered = register.getNumRegisteredUsers();
+            
+            if (!email.contains("@") || !email.contains(".")) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid email format.");
+            return;
+            }
+
+            if (email.equals("admin@gmail.com") && password.equals("admin")) {
+                // Redirect to Admin Window
+                admin adminWindow = new admin();
+                adminWindow.start(new Stage());
+                primaryStage.close();
+            } else {
+                 for (int i = 0; i < numRegistered; i++) {
+                if (email.equals(registeredEmail[i]) && password.equals(registeredPass[i])) {
+                    user user= new user();
+                    try {
+                        user.start(new Stage());
+                    } catch (Exception e1) {
+                        //
+                        e1.printStackTrace();
+                    }
+                    primaryStage.close();
+                    return;
+                }
+                
+            }
+
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid email or password.");
+        }
+        });
+
     }
+
     public void init() {
         anchorPane = new AnchorPane();
         anchorPane.setPrefHeight(200);
@@ -147,20 +203,20 @@ public class Main extends Application {
         innerRow1.setPrefHeight(30);
         innerRow1.setVgrow(Priority.SOMETIMES);
 
-        button1 = new Button("Register");
-        button1.setPrefHeight(25);
-        button1.setPrefWidth(82);
+        registerButton = new Button("Register");
+        registerButton.setPrefHeight(25);
+        registerButton.setPrefWidth(82);
 
-        button2 = new Button("Login");
-        button2.setPrefHeight(25);
-        button2.setPrefWidth(80);
-        GridPane.setColumnIndex(button2, 1);
+        loginButton = new Button("Login");
+        loginButton.setPrefHeight(25);
+        loginButton.setPrefWidth(80);
+        GridPane.setColumnIndex(loginButton, 1);
     }
 
-private void setupLayout(Stage primaryStage) {
+    private void setupLayout(Stage primaryStage) {
         innerGridPane.getColumnConstraints().addAll(innerColumn1, innerColumn2);
         innerGridPane.getRowConstraints().addAll(innerRow1);
-        innerGridPane.getChildren().addAll(button1, button2);
+        innerGridPane.getChildren().addAll(registerButton, loginButton);
 
         gridPane.getColumnConstraints().addAll(column1, column2);
         gridPane.getRowConstraints().addAll(row1, row2, row3);
@@ -177,41 +233,12 @@ private void setupLayout(Stage primaryStage) {
         borderPane.setCenter(vBox);
         anchorPane.getChildren().add(borderPane);
 
-        button1.setOnAction(e -> {
+        registerButton.setOnAction(e -> {
             // Open Register Window
             Register registerApp = new Register();
             registerApp.start(new Stage());
             primaryStage.close();
         });
-
-        button2.setOnAction(e -> {
-    // Validate and redirect based on credentials
-    String email = emailTextField.getText();
-    String password = passwordTextField.getText();
-
-    if (email.isEmpty() || password.isEmpty()) {
-        showAlert(Alert.AlertType.ERROR, "Validation Error", "Email and password must be filled.");
-        return;
-    }
-
-    // Email validation
-    if (!email.contains("@") || !email.contains(".")) {
-        showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid email format.");
-        return;
-    }
-
-    if (email.equals("admin@gmail.com") && password.equals("admin")) {
-        // Redirect to Admin Window
-        admin adminWindow = new admin();
-        adminWindow.start(new Stage());
-        primaryStage.close();
-    } else {
-        // // Redirect to User Window
-        // UserWindow userWindow = new UserWindow();
-        // userWindow.start(new Stage());
-        // primaryStage.close();
-    }
-});
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
@@ -221,7 +248,6 @@ private void setupLayout(Stage primaryStage) {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 
     private void setupScene(Stage primaryStage) {
         Scene scene = new Scene(anchorPane);
