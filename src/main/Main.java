@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -31,7 +32,7 @@ public class Main extends Application {
     private TextField emailTextField;
     private HBox passwordHBox;
     private Label passwordLabel;
-    private TextField passwordTextField;
+    private PasswordField passwordTextField;
     private GridPane gridPane;
     private ColumnConstraints column1;
     private ColumnConstraints column2;
@@ -77,12 +78,7 @@ public class Main extends Application {
             String[] registeredPass = register.getRegisteredPasswords();
             int numRegistered = register.getNumRegisteredUsers();
             
-            if (!email.contains("@") || !email.contains(".")) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid email format.");
-            return;
-            }
-
-            if (email.equals("admin@gmail.com") && password.equals("admin")) {
+            if (email.equals("admin") && password.equals("admin")) {
                 // Redirect to Admin Window
                 admin adminWindow = new admin();
                 adminWindow.start(new Stage());
@@ -102,7 +98,10 @@ public class Main extends Application {
                 }
                 
             }
-
+            if (!email.contains("@") || !email.contains(".")) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid email format.");
+            return;
+            }
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid email or password.");
         }
         });
@@ -153,7 +152,7 @@ public class Main extends Application {
         passwordLabel.setPrefHeight(27);
         passwordLabel.setPrefWidth(65);
 
-        passwordTextField = new TextField();
+        passwordTextField = new PasswordField();
         passwordTextField.setPrefHeight(25);
         passwordTextField.setPrefWidth(160);
 

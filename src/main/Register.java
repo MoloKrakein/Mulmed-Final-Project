@@ -120,6 +120,12 @@ public class Register extends Application {
         registerEmail[registerCount] = email;
         registerPassword[registerCount] = password;
         registerCount++;
+        showAlert(Alert.AlertType.INFORMATION, "Registration Success", "Registration Success");
+        // back to login
+        Main main = new Main();
+        main.start(new Stage());
+        primaryStage.close();
+        
         });
 
     }

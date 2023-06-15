@@ -66,7 +66,10 @@ public class keyboard4 extends Application
 	public void textFunction()
 	{
 		vb2 = new VBox();
-		text = new Text("have you ever seen a typewriter keyboard? now you have seen it!");
+		// text = new Text("have you ever seen a typewriter keyboard? now you have seen it!");
+			KeyboardArray keyboardArray = new KeyboardArray();
+		keyboardArray.init();
+		text = new Text(keyboardArray.getDescription(3));
 		text.setFont(Font.font(20));
 		text.setStyle("-fx-margin-top : 100px");
 		text.setTranslateY(-40);

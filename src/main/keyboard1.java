@@ -30,6 +30,8 @@ public class keyboard1 extends Application
 	GridPane gp;
 	File file;
 	boolean keyboardRotated = false;
+
+	KeyboardArray keyboardArray = new KeyboardArray();
 	
 	
 	public void init()
@@ -65,8 +67,11 @@ public class keyboard1 extends Application
 	
 	public void textFunction()
 	{
+		KeyboardArray keyboardArray = new KeyboardArray();
 		vb2 = new VBox();
-		text = new Text("have you ever seen a typewriter keyboard? now you have seen it!");
+		// text = new Text("have you ever seen a typewriter keyboard? now you have seen it!");
+		keyboardArray.init();
+		text = new Text(keyboardArray.getDescription(0));
 		text.setFont(Font.font(20));
 		text.setStyle("-fx-margin-top : 100px");
 		text.setTranslateY(-40);
