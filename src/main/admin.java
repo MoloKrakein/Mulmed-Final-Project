@@ -3,141 +3,106 @@ package main;
 import java.io.File;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class admin extends Application {
 
-    private TitledPane titledPane;
-    private ScrollPane scrollPane;
-    private VBox vBox;
-
-    public void init() {
-        titledPane = new TitledPane();
-        titledPane.setAnimated(false);
-        titledPane.setMaxHeight(Double.NEGATIVE_INFINITY);
-        titledPane.setMaxWidth(Double.NEGATIVE_INFINITY);
-        titledPane.setMinHeight(Double.NEGATIVE_INFINITY);
-        titledPane.setMinWidth(Double.NEGATIVE_INFINITY);
-        titledPane.setPrefHeight(439.0);
-        titledPane.setPrefWidth(752.0);
-        titledPane.setText("Menu");
-
-        scrollPane = new ScrollPane();
-        scrollPane.setPrefHeight(200.0);
-        scrollPane.setPrefWidth(200.0);
-
-        vBox = new VBox();
-        vBox.setPrefHeight(702.0);
-        vBox.setPrefWidth(728.0);
+    public static void main(String[] args) {
+        launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        init();
+        BorderPane root = new BorderPane();
+        Pane contentPane = new Pane();
+        ScrollPane scrollPane = new ScrollPane(contentPane);
+        VBox vbox = new VBox();
+        vbox.setPrefWidth(763.0);
+        vbox.setPrefHeight(702.0);
 
-        HBox hbox1 = createHBox();
-        HBox hbox2 = createHBox();
-        HBox hbox3 = createHBox();
+        for (int i = 0; i < 6; i++) {
+            HBox hbox = createHBox();
+            vbox.getChildren().add(hbox);
+        }
 
-        vBox.getChildren().addAll(hbox1, hbox2, hbox3);
-        scrollPane.setContent(vBox);
-        titledPane.setContent(scrollPane);
+        vbox.setLayoutX(0.0);
+        vbox.setLayoutY(0.0);
 
-        Scene scene = new Scene(titledPane, 800, 600);
+        contentPane.getChildren().add(vbox);
+
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("File");
+        MenuItem closeItem = new MenuItem("Close");
+        closeItem.setOnAction(e -> primaryStage.close());
+        fileMenu.getItems().add(closeItem);
+        menuBar.getMenus().add(fileMenu);
+
+        root.setTop(menuBar);
+        root.setCenter(scrollPane);
+
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("JavaFX App");
         primaryStage.show();
     }
 
     private HBox createHBox() {
-        HBox hbox = new HBox();
         File file = new File("keyboard1.png");
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        hbox.setPrefHeight(161.0);
+        HBox hbox = new HBox();
         hbox.setPrefWidth(649.0);
+        hbox.setPrefHeight(161.0);
 
         ImageView imageView = new ImageView();
-        imageView.setFitHeight(150.0);
+        imageView.setImage(new Image(file.toURI().toString()));
         imageView.setFitWidth(200.0);
-        imageView.setPickOnBounds(true);
+        imageView.setFitHeight(150.0);
         imageView.setPreserveRatio(true);
-        Image image = new Image("file:" + file.getAbsolutePath() + "");
-        imageView.setImage(image);
+        imageView.setPickOnBounds(true);
 
         GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
         ColumnConstraints columnConstraints = new ColumnConstraints();
-        columnConstraints.setHgrow(javafx.scene.layout.Priority.SOMETIMES);
+        columnConstraints.setHgrow(Priority.SOMETIMES);
         columnConstraints.setMinWidth(10.0);
         gridPane.getColumnConstraints().add(columnConstraints);
 
-        RowConstraints row1 = new RowConstraints();
-        row1.setMinHeight(10.0);
-        row1.setVgrow(javafx.scene.layout.Priority.SOMETIMES);
-        RowConstraints row2 = new RowConstraints();
-        row2.setMinHeight(10.0);
-        row2.setPrefHeight(30.0);
-        row2.setVgrow(javafx.scene.layout.Priority.SOMETIMES);
-        gridPane.getRowConstraints().addAll(row1, row2);
+        RowConstraints rowConstraints1 = new RowConstraints();
+        rowConstraints1.setMinHeight(10.0);
+        rowConstraints1.setVgrow(Priority.SOMETIMES);
 
-        HBox hboxContent1 = createHBoxContent();
-        VBox vboxContent2 = createVBoxContent();
+        RowConstraints rowConstraints2 = new RowConstraints();
+        rowConstraints2.setMinHeight(10.0);
+        rowConstraints2.setPrefHeight(30.0);
+        rowConstraints2.setVgrow(Priority.SOMETIMES);
 
-        gridPane.add(hboxContent1, 0, 0);
-        gridPane.add(vboxContent2, 0, 1);
+        gridPane.getRowConstraints().addAll(rowConstraints1, rowConstraints2);
 
-        hbox.getChildren().addAll(imageView, gridPane);
-        return hbox;
-    }
-
-    private HBox createHBoxContent() {
-        HBox hboxContent = new HBox();
-        hboxContent.setAlignment(Pos.CENTER);
-
+        HBox hboxInner = new HBox();
         Label nameLabel = new Label("Name");
         TextField nameTextField = new TextField();
-
         Label priceLabel = new Label("Price");
         TextField priceTextField = new TextField();
-
         Label stockLabel = new Label("Stock");
         TextField stockTextField = new TextField();
 
-        hboxContent.getChildren().addAll(nameLabel, nameTextField, priceLabel, priceTextField, stockLabel, stockTextField);
-        return hboxContent;
-    }
+        hboxInner.getChildren().addAll(nameLabel, nameTextField, priceLabel, priceTextField, stockLabel, stockTextField);
 
-    private VBox createVBoxContent() {
-        VBox vboxContent = new VBox();
-        vboxContent.setAlignment(Pos.CENTER_LEFT);
-        vboxContent.setPrefHeight(83.0);
-        vboxContent.setPrefWidth(555.0);
-
-        HBox hboxContent1 = new HBox();
+        VBox vboxInner = new VBox();
         Label descriptionLabel = new Label("Description");
         TextField descriptionTextField = new TextField();
-        hboxContent1.getChildren().addAll(descriptionLabel, descriptionTextField);
-
         Button updateButton = new Button("Update");
 
-        vboxContent.getChildren().addAll(hboxContent1, updateButton);
-        return vboxContent;
-    }
+        vboxInner.getChildren().addAll(descriptionLabel, descriptionTextField, updateButton);
 
-    public static void main(String[] args) {
-        launch(args);
+        gridPane.add(hboxInner, 0, 0);
+        gridPane.add(vboxInner, 0, 1);
+
+        hbox.getChildren().addAll(imageView, gridPane);
+
+        return hbox;
     }
 }
