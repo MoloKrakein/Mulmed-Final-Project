@@ -50,42 +50,81 @@ public class Register extends Application {
         primaryStage.show();
 
         // Back to login Logic
-        loginButton.setOnAction(e->{
-        Main main = new Main();
-        main.start(new Stage());
-        primaryStage.close();
-    });
-                // Button Logic Reg
-        registerButton.setOnAction(e-> {
-        String email = emailTextField.getText();
-        String password = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
+        loginButton.setOnAction(e -> {
+            Main main = new Main();
+            main.start(new Stage());
+            primaryStage.close();
+        });
+        // Button Logic Reg
 
-        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "All fields must be filled.");
-            return;
-        }
 
-        if (!password.equals(confirmPassword)) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Password and Confirm Password do not match.");
-            return;
-        }
+        registerButton.setOnAction(e -> {
+            String email = emailTextField.getText();
+            String password = passwordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+            if (email.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Validation Error", "Email must be filled.");
+                return;
+            }
 
-        // Store the registration information
+            if (!email.endsWith("@email.com")) {
+                showAlert(Alert.AlertType.ERROR, "Email must end with '@email.com'.", email);
+                return;
+            }
+
+            if (email.indexOf('@') != email.lastIndexOf('@')) {
+                showAlert(Alert.AlertType.ERROR, "Email must have only one '@' symbol.", email);
+                return;
+            }
+
+            if (email.contains(" ")) {
+                showAlert(Alert.AlertType.ERROR, "Email must not contain spaces.", email);
+                return;
+            }
+
+            if (email.startsWith("@")) {
+                showAlert(Alert.AlertType.ERROR, "Email must not start with '@'.", email);
+                return;
+            }
+
+            // Email harus unique
+
+            if (password.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Validation Error", "Password must be filled.");
+                return;
+            }
+            if (confirmPassword.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Validation Error", "Confirm Password must be filled.");
+                return;
+            }
+            if (!confirmPassword.equals(password)) {
+                showAlert(Alert.AlertType.ERROR, "Validation Error", "Confirm Password must match with Password.");
+                return;
+            }
+            // Save
+            // Close Register Window
+            // Open Login Window
+
+            //email check if already registered or not, if not then save the email and password
+            boolean emailRegistered = false;
+            for (int i = 0; i < registerCount; i++) {
+                if (email.equals(registerEmail[i])) {
+                    emailRegistered = true;
+                    break;
+                }
+            }
+            if (emailRegistered) {
+                showAlert(Alert.AlertType.ERROR, "Email already registered.", email);
+                return;
+            }
         registerEmail[registerCount] = email;
         registerPassword[registerCount] = password;
         registerCount++;
+        });
 
-        // Clear the registration fields
-        emailTextField.clear();
-        passwordField.clear();
-        confirmPasswordField.clear();
-
-        // Show a success message
-        showAlert(Alert.AlertType.INFORMATION, "Success", "Registration successful!");
-    });
     }
-        public static String[] getRegisteredEmails() {
+
+    public static String[] getRegisteredEmails() {
         return registerEmail;
     }
 
@@ -96,6 +135,7 @@ public class Register extends Application {
     public static int getNumRegisteredUsers() {
         return registerCount;
     }
+
     public void init() {
         anchorPane = new AnchorPane();
         anchorPane.setPrefHeight(200);
@@ -190,10 +230,9 @@ public class Register extends Application {
 
         vBox.getChildren().addAll(titleLabel, gridPane);
         borderPane.setCenter(vBox);
-        
-
 
     }
+
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

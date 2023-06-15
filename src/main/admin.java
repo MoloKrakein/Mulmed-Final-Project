@@ -64,7 +64,7 @@ public class admin extends Application {
 
     private HBox createHBox() {
         HBox hbox = new HBox();
-        File file = new File("assets/assets/keyboard1.png");
+        File file = new File("keyboard1.png");
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.setPrefHeight(161.0);
         hbox.setPrefWidth(649.0);

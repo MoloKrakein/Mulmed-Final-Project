@@ -1,7 +1,5 @@
 package main;
 
-import java.util.Map;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
