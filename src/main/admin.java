@@ -4,6 +4,7 @@ import java.io.File;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -11,6 +12,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -79,6 +81,19 @@ public class admin extends Application {
         gridPane1.add(vBox1Inner, 0, 1);
 
         updateButton1.setOnAction(e -> {
+            // check if the fields is integer or not
+            try {
+                Integer.parseInt(priceTextField1.getText());
+                Integer.parseInt(stockTextField1.getText());
+            } catch (NumberFormatException ex) {
+                // System.out.println("Price and Stock must be integer");
+                // show alert
+                showAlert(AlertType.ERROR, "Form Error!", "Price and Stock must be integer");
+
+
+                return;
+            }
+            
             keyboardArray.setName(0, nameTextField1.getText());
             keyboardArray.setPrice(0, Integer.parseInt(priceTextField1.getText()));
             keyboardArray.setStock(0, Integer.parseInt(stockTextField1.getText()));
@@ -368,5 +383,13 @@ public class admin extends Application {
         {
             e.printStackTrace();
         }
+    }
+
+        private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
