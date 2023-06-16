@@ -1,6 +1,9 @@
 package main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.util.Scanner;
 import java.util.Vector;
 
 import javafx.application.Application;
@@ -27,23 +30,37 @@ public class MainKeyboard extends Application {
     File audioFile;
     Media audioMedia;
     MediaPlayer audioPlayer;
+            BorderPane bp = new BorderPane();
+        VBox leftBox = new VBox();
+        VBox rightBox = new VBox();
+        ScrollPane scrollLeft = new ScrollPane();
+        ScrollPane scrollRight = new ScrollPane();
+                VBox rightPane = new VBox();
 
     private Vector<String> productName = new Vector<String>();
     private Vector<Integer> productPrice = new Vector<Integer>();
     private Vector<Integer> productStock = new Vector<Integer>();
     private Vector<String> productDesc = new Vector<String>();
 
+    private String[] savedString;
+
     public static void main(String[] args) {
         launch(args);
     }
 
     void dragDropHandler(Label name, ImageView productsView, ScrollPane scrollRight, Stage primaryStage, int index) {
+        String dbContent;
         name.setOnDragDetected(e -> {
             Dragboard db = name.startDragAndDrop(TransferMode.ANY);
             ClipboardContent board = new ClipboardContent();
             board.putString(name.getText());
             db.setContent(board);
             e.consume();
+            // save string merge to savedString
+            // dbContent = db.getString()+dbContent;
+            //             savedString[index] = db.getString();
+            // System.out.println(savedString[index]);
+
         });
 
         productsView.setOnDragDetected(e -> {
@@ -62,6 +79,7 @@ public class MainKeyboard extends Application {
         });
 
         scrollRight.setOnDragDropped(e -> {
+            savedString = new String[productName.size()];
             Dragboard db = e.getDragboard();
             boolean success = false;
             if (db.hasString()) {
@@ -69,25 +87,40 @@ public class MainKeyboard extends Application {
                 VBox rightBox = (VBox) scrollRight.getContent();
                 rightBox.getChildren().add(rightBox.getChildren().size() - 1, droppedName); // Add item at second-to-last index
                 success = true;
+                savedString[index] = droppedName.getText();
+                System.out.println(savedString[index]);
+                // save to file
+                try {
+                    FileWriter myWriter = new FileWriter("cart.txt",true);
+                    for (int i = 0; i < savedString.length; i++) {
+                        if (savedString[i] != null) {
+                            myWriter.write(savedString[i] + "\n");
+                        }
+                    }
+                    myWriter.close();
+                } catch (Exception ex) {
+                    System.out.println("An error occurred.");
+                    ex.printStackTrace();
+                }
             }
+
             e.setDropCompleted(success);
             e.consume();
         });
+
+        
+
     }
 
-    
+
  
 
     void dragDropPage(Stage primaryStage) {
-        BorderPane bp = new BorderPane();
-        VBox leftBox = new VBox();
-        VBox rightBox = new VBox();
-        ScrollPane scrollLeft = new ScrollPane();
-        ScrollPane scrollRight = new ScrollPane();
+
 
         Label leftTitle = new Label("Keyboard Catalogue");
 
-        VBox rightPane = new VBox();
+
 
         scrollLeft.setContent(leftBox);
         scrollRight.setContent(rightPane);
@@ -127,7 +160,7 @@ public class MainKeyboard extends Application {
             Image products = new Image("file:keyboard" + (i + 1) + ".png");
             ImageView productsView = new ImageView(products);
 
-            Label name = new Label("Name: " + productName.get(i));
+            Label name = new Label("Nama: " + productName.get(i));
             Label price = new Label("Price: " + productPrice.get(i));
             Label stock = new Label("Stock: " + productStock.get(i));
             Label desc = new Label("Description: " + productDesc.get(i));
@@ -160,6 +193,8 @@ public class MainKeyboard extends Application {
             dragDropHandler(name, productsView, scrollRight, primaryStage, i);
 
             leftBox.getChildren().addAll(productsView, name, price, stock, desc);
+
+            // save 
         }
 
         VBox buttonBox = new VBox();
@@ -170,6 +205,8 @@ public class MainKeyboard extends Application {
         rightPane.getChildren().addAll(rightBox);
 
         clear.setOnAction(e -> {
+            purge();
+            loadSavedText();
             rightPane.getChildren().clear();
             rightPane.getChildren().addAll(rightBox);
         });
@@ -178,6 +215,35 @@ public class MainKeyboard extends Application {
 
         Scene scene = new Scene(bp, 500, 500);
         primaryStage.setScene(scene);
+
+        // buy.setOnAction(e->{
+        //     // save 
+        //     // get list from left box
+
+        //     // right box total children
+        //     int totalChildren = rightBox.getChildren().size();
+        //     for (int i = 0; i < totalChildren; i++) {
+        //         if (rightBox.getChildren().get(i) instanceof Label) {
+        //             Label temp = (Label) rightBox.getChildren().get(i);
+        //             if (temp.getText().contains("Nama")) {
+        //                 savedString[i] = temp.getText().substring(6);
+        //                 System.out.println(savedString[i]);
+        //             }
+        //         }
+        //         // print saved string to file
+        //         try {
+        //             FileWriter fw = new FileWriter("savedString.txt",true);
+        //             for (int j = 0; j < savedString.length; j++) {
+        //                 fw.write(savedString[j] + "\n");
+        //             }
+        //             fw.close();
+        //         } catch (Exception ex) {
+        //             ex.printStackTrace();
+        //         }
+        //     }
+
+
+        // });
     }
     
  
@@ -194,12 +260,43 @@ public class MainKeyboard extends Application {
     @Override
     public void start(Stage primaryStage) 
     {
+        // purge();
+        loadSavedText();
         audio();
         dragDropPage(primaryStage);
         primaryStage.show();
         // System.out.println("Hello World");
     }
     
+    void loadSavedText(){
+
+        try {
+            File myObj = new File("cart.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+              String data = myReader.nextLine();
+                // System.out.println(data);
+                // import to right pane
+                Label temp = new Label(data);
+                rightPane.getChildren().add(temp);
+            }
+            myReader.close();
+          } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+    }
+    
+    void purge(){
+        try {
+            FileWriter fw = new FileWriter("cart.txt");
+            fw.write("");
+            fw.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     void keyboard1()
     {
         keyboard1 app = new keyboard1();
@@ -261,5 +358,7 @@ public class MainKeyboard extends Application {
             e.printStackTrace();
         }
     }
+    
+
 }
 
